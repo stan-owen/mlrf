@@ -1,11 +1,14 @@
 import numpy as np
+import joblib
 import matplotlib.pyplot as plt
+
 from sklearn.cluster import KMeans
 
 class ColorDescriptorExtractor:
-    def __init__(self, kmeans=None, n_clusters=10):
+    def __init__(self, name="Color", kmeans=None, n_clusters=10):
+        self.name = name
         self.n_clusters = n_clusters
-        self.kmeans = kmeans
+        self.kmeans = None if kmeans is None else joblib.load(kmeans)
         self.color_lut = None
         self.histogram = None
 
@@ -22,15 +25,19 @@ class ColorDescriptorExtractor:
         return train_data_color, train_data_concat
 
     def fit(self, batch):
+        print(self.name + " fitting kmeans...")
         train_data_color, _ = self.concat_reshape_image_color(batch)
 
         if not self.kmeans:
             self.kmeans = KMeans(n_clusters=self.n_clusters, n_init=10, random_state=42)
+            joblib.dump(self.kmeans, self.name + '_kmeans.joblib')
         
         self.kmeans.fit(train_data_color)
         self.color_lut = np.uint8(self.kmeans.cluster_centers_)
+        print(self.name + " done fitting kmeans.")
 
     def compute_descriptor(self, batch):
+        print(self.name + " computing descriptor...")
         if self.kmeans is None or self.color_lut is None:
             raise RuntimeError("The descriptor extractor is not fitted. Call the 'fit' method first.")
 
@@ -42,3 +49,4 @@ class ColorDescriptorExtractor:
             color_histograms.append(color_histogram)
 
         self.histogram = color_histograms
+        print(self.name + " done computing descriptor.")

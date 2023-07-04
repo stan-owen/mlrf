@@ -7,8 +7,9 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import Normalizer
 
 class BOVWDescriptorExtractor:
-    def __init__(self, kmeans=None, n_clusters=512):
-        self.kmeans = kmeans
+    def __init__(self, name="BOVW", kmeans=None, n_clusters=512):
+        self.name = name
+        self.kmeans = None if kmeans is None else joblib.load(kmeans)
         self.n_clusters = n_clusters
         self.image_descriptor = None
         self.data = None
@@ -46,20 +47,23 @@ class BOVWDescriptorExtractor:
         train_data_concat = train_data_concat.astype(np.float32)
 
         train_mean = self.compute_mean(train_data_concat)
-        pca_transform = self.compute_pca(train_mean)
 
-        self.data_concat = pca_transform
+
+        self.data_concat = train_mean #pca_transform
         self.data = train_data_sift
 
     def fit(self, batch):
+        print(self.name + " fitting kmeans...")
         if self.data is None:
             self.transform_data(batch)
 
         if self.kmeans == None:
-            self.kmeans = KMeans(n_clusters=self.n_clusters, n_init=10, random_state=42).fit(self.data)
-            joblib.dump(self.kmeans, 'BOVW_kmeans.joblib')
+            self.kmeans = KMeans(n_clusters=self.n_clusters, n_init=10, random_state=42).fit(self.data_concat)
+            joblib.dump(self.kmeans, self.name + '_kmeans.joblib')   
+        print(self.name + " fitting kmeans... done")      
 
     def compute_descriptor(self, batch):
+        print(self.name + " computing descriptor...")
         if self.kmeans is None:
             raise RuntimeError("The descriptor extractor is not fitted. Call the 'fit' method first.")
         
@@ -86,3 +90,4 @@ class BOVWDescriptorExtractor:
             image_descriptor[index] = descr_hist
 
         self.image_descriptor = image_descriptor
+        print(self.name + " computing descriptor... done")
