@@ -5,12 +5,9 @@ from data import *
 from result import *
 from classifieur import *
 
-from sklearn.ensemble import RandomForestClassifier
-
 def __main__():
-    flat()
+    bovw()
     return True
-
     
 def bovw():
     train_batch, train_labels, test_batch, test_labels, labels_name = load_data()

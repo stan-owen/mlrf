@@ -1,7 +1,7 @@
 import numpy as np
 import os
 
-PATH_TO_RESOURCES = "data/cifar-10-python/"
+PATH_TO_RESOURCES = "../data/cifar-10-python/"
 
 def unpickle(file):
     import pickle
@@ -23,10 +23,10 @@ def get_batch(batch_filename):
 
 def load_data():
     train_batch, train_labels = get_batch(PATH_TO_RESOURCES + "data_batch_1")
-    # for i in range(2, 6):
-    #     batch, labels = get_batch(PATH_TO_RESOURCES +  "data_batch_" + str(i))
-    #     train_batch = np.append(train_batch, batch, axis=0)
-    #     train_labels = np.append(train_labels, labels, axis=0)
+    for i in range(2, 6):
+        batch, labels = get_batch(PATH_TO_RESOURCES +  "data_batch_" + str(i))
+        train_batch = np.append(train_batch, batch, axis=0)
+        train_labels = np.append(train_labels, labels, axis=0)
     test_batch, labels_test = get_batch(PATH_TO_RESOURCES + "test_batch")
 
     labels_name = [str(l)[2:-1] for l in unpickle(os.path.join(PATH_TO_RESOURCES, "batches.meta"))[b'label_names']]

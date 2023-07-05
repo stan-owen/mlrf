@@ -1,6 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
-
 
 class FlatDescriptorExtractor:
     def __init__(self, name="Flat"):

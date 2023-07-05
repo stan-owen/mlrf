@@ -59,7 +59,7 @@ class BOVWDescriptorExtractor:
 
         if self.kmeans == None:
             self.kmeans = KMeans(n_clusters=self.n_clusters, n_init=10, random_state=42).fit(self.data_concat)
-            joblib.dump(self.kmeans, self.name + '_kmeans.joblib')   
+            joblib.dump(self.kmeans, "../models/" + self.name + '_kmeans.joblib')   
         print(self.name + " fitting kmeans... done")      
 
     def compute_descriptor(self, batch):
